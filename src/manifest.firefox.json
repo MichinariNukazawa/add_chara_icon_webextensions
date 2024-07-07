@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "name": "daisy AddCharaIcon",
+  "description": "In page characters name append icon image.",
+  "homepage_url": "https://github.com/MichinariNukazawa/add_chara_icon_webextension/tree/master/",
+  "version": "1.0.0",
+  "icons": {
+    "48": "icons/icon-x48.png",
+    "96": "icons/icon-x96.png"
+  },
+
+  "permissions": [
+    "storage", 
+    "unlimitedStorage"
+  ],
+
+	"background": {
+		"scripts": [
+      "./background.js"
+    ],
+		"persistent": false
+	},
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": [
+        "./scraper.js",
+        "./collecter.js",
+        "./dictionary.js",
+        "./noter.js",
+        "./content_script.js"
+      ]
+    }
+  ]
+}
