@@ -13,21 +13,18 @@ const dictionary_initialized = async () => {
 	return Object.keys(item).length !== 0;
 }
 
-const dictionary_queryWord = (word, callback) => {
+const dictionary_queryWord = async (word) => {
 	//let data = dictionary_data[word];
 
-	chrome.storage.local.get([word]).then((item) => {
-		if(Object.keys(item).length === 0){
-			callback(null);
-			return;
-		}
+	const item = await chrome.storage.local.get([word]);
 
-		//console.log('item', item);
-		let data = item[word];
-		data['name'] = word;
-		callback(data);
-	}, (error) => {
-		console.error('', word, error);
-		callback(null);
-	});
+	if(Object.keys(item).length === 0){
+		return null;
+	}
+
+	//console.log('item', item);
+	let data = item[word];
+	data['name'] = word;
+
+	return data;
 }

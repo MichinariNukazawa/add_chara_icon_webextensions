@@ -1,32 +1,31 @@
 /**
  * Substitutes do into text nodes.
  */
-function replaceText (node) {
+const replaceText = async (node) => {
 	if (node.nodeType === Node.TEXT_NODE) {
 		if (node.parentNode && node.parentNode.nodeName === 'TEXTAREA') {
 			return;
 		}
 
-		doCharaNoterForNode(node);
+		await doCharaNoterForNode(node);
 	}
 	else {
 		for (let i = 0; i < node.childNodes.length; i++) {
-			replaceText(node.childNodes[i]);
+			await replaceText(node.childNodes[i]);
 		}
 	}
 }
 
-/*
 // Now monitor the DOM for additions and substitute wareki into new nodes.
 // @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver.
 const observer = new MutationObserver((mutations) => {
-	mutations.forEach((mutation) => {
+	mutations.forEach(async (mutation) => {
 		if (mutation.addedNodes && mutation.addedNodes.length > 0) {
 			// This DOM change was new nodes being added. Run our substitution
 			// algorithm on each newly added node.
 			for (let i = 0; i < mutation.addedNodes.length; i++) {
 				const newNode = mutation.addedNodes[i];
-				replaceText(newNode);
+				await replaceText(newNode);
 			}
 		}
 	});
@@ -35,7 +34,6 @@ observer.observe(document.body, {
 	childList: true,
 	subtree: true
 });
-*/
 
 const initialize = () => {
 	console.log('initialize target url:', document.URL);
