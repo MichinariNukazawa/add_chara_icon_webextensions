@@ -5,8 +5,9 @@ In page append notation with game characters.
 
 <img src="document/20240707_example.png" width="500">  
 
-# Get lina\_dicto for webextension
-TODO  
+# Get AddCharaIcon for webextension
+[Firefox Add-ons](https://addons.mozilla.org/ja/firefox/addon/daisy-addcharaicon/)  
+[Chrome WebStore](https://chromewebstore.google.com/detail/daisy-addcharaicon/pgknndjpopofcdekhleekobmgkbphepm)  
 
 # Build
 Build env is Ubuntu.  
