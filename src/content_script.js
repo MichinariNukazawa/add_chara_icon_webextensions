@@ -7,15 +7,20 @@ const replaceText = async (node) => {
 			return;
 		}
 
-		await doCharaNoterForNode(node);
+		doCharaNoterForNode(node);
 	}
 	else {
+		// for (let i = node.childNodes.length - 1; 0 <= i; i--) {
 		for (let i = 0; i < node.childNodes.length; i++) {
 			await replaceText(node.childNodes[i]);
 		}
 	}
 }
 
+// memo: twitterなどの一部環境では同じNodeに対して２度コールされることがある模様
+// （最初の１回はページ読み込み時の通常呼び出しかもしれず、挙動の理由の詳細は追ってもいないが、
+// 少なくともtextContentの内容は変わらないままでも、ともかくそういうことが起こる）
+//
 // Now monitor the DOM for additions and substitute wareki into new nodes.
 // @see https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver.
 const observer = new MutationObserver((mutations) => {
@@ -25,6 +30,7 @@ const observer = new MutationObserver((mutations) => {
 			// algorithm on each newly added node.
 			for (let i = 0; i < mutation.addedNodes.length; i++) {
 				const newNode = mutation.addedNodes[i];
+				console.log('new', newNode);
 				await replaceText(newNode);
 			}
 		}
