@@ -1,10 +1,9 @@
 
-const collectImages = (dictionary_data, callback) => {
-	for(let key in dictionary_data){
-		let data = dictionary_data[key];
+const collectImage = async (icon_src_url) => {
+	return new Promise((resolve, reject) => {
 		const img = document.createElement('img');
 
-		const loaded = (key, img) => {
+		const loaded = (img) => {
 			// canvasを作ってimg elementの画像を描画
 			const canvas = document.createElement('canvas');
 			
@@ -23,22 +22,42 @@ const collectImages = (dictionary_data, callback) => {
 
 			// dataURL を取得
 			const dataUrl = canvas.toDataURL('image/png');
-			console.log('collected', key, img.width, img.height, dataUrl);
-			callback(key, dataUrl);
+			//console.log('collected', img.width, img.height, dataUrl);
+			resolve(dataUrl);
 		}
 
-		img.src = data['icon_src_url'];
+		img.src = icon_src_url;
 		if(img.complete){
-			//console.log('img completed', key);
-			loaded(key, img);
+			//console.log('img completed', icon_src_url);
+			loaded(img);
 		}else{
-			console.log('img need load', key);
-			img.addEventListener('load', () => {loaded(key, img)});
-			img.addEventListener('error', function() {
-				//alert('error')
-				console.error('image can not loaded', key);
-				callback(key, null);
+			//console.log('img need load', icon_src_url);
+			img.addEventListener('load', () => {
+				loaded(img)
+			});
+			img.addEventListener('error', () => {
+				console.error('image can not loaded', icon_src_url);
+				reject(`image can not loaded:${icon_src_url}`);
 			});
 		}
-	}
+	});
 } 
+
+const collector = async (title, dictionary_data) => {
+	for(let key in dictionary_data){
+		let data = dictionary_data[key];
+		
+		try{
+			const dataUrl = await collectImage(data['icon_src_url']);
+			dictionary_data[key]['icon_data'] = dataUrl;
+			dictionary_data[key]['title'] = title;	
+		}catch(error){
+			console.error('can not collected', key, error);
+			delete dictionary_data[key];
+		}
+	}
+
+	console.log('collected all', chrome.runtime.getManifest().name);
+
+	return dictionary_data;
+}

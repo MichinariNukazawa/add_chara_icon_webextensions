@@ -30,7 +30,7 @@ const observer = new MutationObserver((mutations) => {
 			// algorithm on each newly added node.
 			for (let i = 0; i < mutation.addedNodes.length; i++) {
 				const newNode = mutation.addedNodes[i];
-				console.log('new', newNode);
+				//console.log('new', newNode);
 				await replaceText(newNode);
 			}
 		}
@@ -41,61 +41,44 @@ observer.observe(document.body, {
 	subtree: true
 });
 
-const initialize = (title, scraper) => {
+const initialize = async (title, scraper) => {
 	console.log('initialize target url:', document.URL);
 
-	const dictionary_data = scraper();
-	console.log('scraped', title, dictionary_data);
+	const scrapedHash = scraper();
+	console.log('scraped', title, scrapedHash);
 
-	let count = 0; // 汚いカウンタ
-	const callback = (key, dataUrl) => {
-		//console.log('collected', key, dataUrl);
-		if(dataUrl){
-			dictionary_data[key]['icon_data'] = dataUrl;
-			dictionary_data[key]['title'] = title;
+	const onError = (error) => {
+		console.error('can not saved', error);
+		window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定に失敗しました\nerror:${error}`);
+	};
 
-			/*
-			// debug	
-			let img = document.createElement("img");
-			img.src = dictionary_data[key]['icon_data']
-			img.width = '16'
-			img.height = '16'
-			img.style = 'object-fit: contain;'
-			img.classList.add('daisy-at-chara-icon_item')
-			img.classList.add('daisy-at-chara-icon_image')
-			document.querySelectorAll('#body > ul:nth-child(7) > li:nth-child(1) > span')[0].append(img);
-			console.log('debug',img);
-			*/
-		}else{
-			console.error('can not collected', key);
-			delete dictionary_data[key];
+	// TODO try-catch で囲ったawaitでこの下は書き換えられないか？
+	const promise = collector(title, scrapedHash);
+	promise.then(
+		(dictionary_data) => {
+			chrome.storage.local.set(dictionary_data).then(
+				() => {
+					// firefox not supported?
+					// https://stackoverflow.com/questions/40561503/get-size-of-browser-storage-local-in-firefox-via-webextensions
+					// https://developer.mozilla.org/ja/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getBytesInUse
+					//chrome.storage.local.getBytesInUse(null).then((value) => {
+					//	console.log('saved (MiB)', value / (1024 * 1024));
+					//});
+					chrome.storage.local.get(null, function(items) {
+						var allKeys = Object.keys(items);
+						console.log('allkeys:', allKeys);
+
+						// TODO firefoxで複数ページで同時にalertを呼び出すと、最初のalertを閉じないと次のalertが表示されない？
+						window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定が完了しました`);
+
+						replaceText(document.body);
+					});
+				}
+				,onError
+			);
 		}
-		count++;
-		if(Object.keys(dictionary_data).length <= count){
-			console.log('collected all', chrome.runtime.getManifest().name);
-
-			window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定が完了しました`);
-
-			chrome.storage.local.set(dictionary_data).then(() => {
-				// firefox not supported?
-				// https://stackoverflow.com/questions/40561503/get-size-of-browser-storage-local-in-firefox-via-webextensions
-				// https://developer.mozilla.org/ja/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getBytesInUse
-				//chrome.storage.local.getBytesInUse(null).then((value) => {
-				//	console.log('saved (MiB)', value / (1024 * 1024));
-				//});
-				chrome.storage.local.get(null, function(items) {
-					var allKeys = Object.keys(items);
-					console.log('allkeys:', allKeys);
-
-					replaceText(document.body);
-				});
-			}, (error) => {
-				console.error('can not saved', error);
-			})
-		}
-	}
-
-	collectImages(dictionary_data, callback);
+		,onError
+	);
 }
 
 const main = async () => {
@@ -123,7 +106,7 @@ const main = async () => {
 		const urls = collectTargets[title].urls;
 		const inited = await dictionary_initialized(title);
 		if(urls.includes(document.URL) && (! inited)){
-			initialize(title, collectTargets[title].scraper);
+			await initialize(title, collectTargets[title].scraper);
 			isInit = true;
 		}
 	}
