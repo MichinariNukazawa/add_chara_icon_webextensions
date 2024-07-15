@@ -44,41 +44,33 @@ observer.observe(document.body, {
 const initialize = async (title, scraper) => {
 	console.log('initialize target url:', document.URL);
 
-	const scrapedHash = scraper();
-	console.log('scraped', title, scrapedHash);
+	try{
+		const scrapedHash = scraper();
+		console.log('scraped', title, scrapedHash);
+		const dictionary_data = await collector(title, scrapedHash);
+		await chrome.storage.local.set(dictionary_data);
+		// firefox not supported?
+		// https://stackoverflow.com/questions/40561503/get-size-of-browser-storage-local-in-firefox-via-webextensions
+		// https://developer.mozilla.org/ja/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getBytesInUse
+		//chrome.storage.local.getBytesInUse(null).then((value) => {
+		//	console.log('saved (MiB)', value / (1024 * 1024));
+		//});
+		//const items = await chrome.storage.local.get(null);
+		//let allKeys = Object.keys(items);
+		//console.log('allkeys:', allKeys);
 
-	const onError = (error) => {
+	}catch(error){
 		console.error('can not saved', error);
 		window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定に失敗しました\nerror:${error}`);
+		return;
 	};
 
-	// TODO try-catch で囲ったawaitでこの下は書き換えられないか？
-	const promise = collector(title, scrapedHash);
-	promise.then(
-		(dictionary_data) => {
-			chrome.storage.local.set(dictionary_data).then(
-				() => {
-					// firefox not supported?
-					// https://stackoverflow.com/questions/40561503/get-size-of-browser-storage-local-in-firefox-via-webextensions
-					// https://developer.mozilla.org/ja/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getBytesInUse
-					//chrome.storage.local.getBytesInUse(null).then((value) => {
-					//	console.log('saved (MiB)', value / (1024 * 1024));
-					//});
-					chrome.storage.local.get(null, function(items) {
-						var allKeys = Object.keys(items);
-						console.log('allkeys:', allKeys);
+	// TODO firefoxで複数ページで同時にalertを呼び出すと、最初のalertを閉じるまで処理が進まない様子
+	// （別ページでは、alertが表示されないし、page_contentのJSも動かず辞書設定が行われない）
+	// ユーザ操作によってはArkNightsの辞書読み込みが実施されないので、何らかの対処が必要
+	window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定が完了しました`);
 
-						// TODO firefoxで複数ページで同時にalertを呼び出すと、最初のalertを閉じないと次のalertが表示されない？
-						window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定が完了しました`);
-
-						replaceText(document.body);
-					});
-				}
-				,onError
-			);
-		}
-		,onError
-	);
+	replaceText(document.body);
 }
 
 const main = async () => {
