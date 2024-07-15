@@ -1,0 +1,12 @@
+@charset "utf-8";
+
+body{
+	background: rgb(13, 17, 24);
+	color: rgb(108, 153, 153);
+}
+
+.icon_showground{
+	margin: 3px;
+	padding: 2px;
+	border: 1px solid black;
+}

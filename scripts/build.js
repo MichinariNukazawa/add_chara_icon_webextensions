@@ -16,9 +16,13 @@ async function copyFiles(srcDir, distDir) {
       'noter.js',
       'dictionary.js',
       //'dictionary_data.js',
-      'scraper.js',
+      "scraper_ArkNights.js",
+      "scraper_BlueArchive.js",
       'collecter.js',
       'background.js',
+      'option_page/option_page.html',
+      'option_page/option_page.js',
+      'option_page/style.css',
     ];
     for(const file of files){
       await fs.copy(path.join(srcDir, file), path.join(distDir, file));

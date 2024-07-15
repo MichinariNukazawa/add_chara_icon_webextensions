@@ -1,6 +1,6 @@
 // !https://bluearchive.wikiru.jp/?キャラクター一覧
 
-const scrapeCharacterListPage = () => {
+const scrapeCharacterListPage_BlueArchive = () => {
 	// 生徒を取得
 	let rowsElements = document.querySelectorAll('#sortabletable1 > tbody > tr');
 

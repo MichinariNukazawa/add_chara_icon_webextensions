@@ -41,17 +41,18 @@ observer.observe(document.body, {
 	subtree: true
 });
 
-const initialize = () => {
+const initialize = (title, scraper) => {
 	console.log('initialize target url:', document.URL);
 
-	const dictionary_data = scrapeCharacterListPage()
-	console.log('scraped', dictionary_data);
+	const dictionary_data = scraper();
+	console.log('scraped', title, dictionary_data);
 
 	let count = 0; // 汚いカウンタ
 	const callback = (key, dataUrl) => {
 		//console.log('collected', key, dataUrl);
 		if(dataUrl){
 			dictionary_data[key]['icon_data'] = dataUrl;
+			dictionary_data[key]['title'] = title;
 
 			/*
 			// debug	
@@ -72,8 +73,8 @@ const initialize = () => {
 		count++;
 		if(Object.keys(dictionary_data).length <= count){
 			console.log('collected all', chrome.runtime.getManifest().name);
-			
-			window.alert(`${chrome.runtime.getManifest().name}：拡張機能の初期設定が完了しました`);
+
+			window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定が完了しました`);
 
 			chrome.storage.local.set(dictionary_data).then(() => {
 				// firefox not supported?
@@ -99,14 +100,35 @@ const initialize = () => {
 
 const main = async () => {
 	// MDNに明記されていなかったのでBase64エンコーディングもありうる想定でマッチする
-	const urls = [
-		'https://bluearchive.wikiru.jp/?キャラクター一覧',
-		'https://bluearchive.wikiru.jp/?%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7',
-	];
-	const inited = await dictionary_initialized();
-	if(urls.includes(document.URL) && (! inited)){
-		initialize();
-	}else{
+	const collectTargets = {
+		'BlueArchive':
+		{
+			'scraper': scrapeCharacterListPage_BlueArchive,
+			'urls': [
+				'https://bluearchive.wikiru.jp/?キャラクター一覧',
+				'https://bluearchive.wikiru.jp/?%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7',
+			],
+		},
+		'ArkNights':
+		{
+			'scraper': scrapeCharacterListPage_ArkNights,
+			'urls': [
+				'https://arknights.wikiru.jp/?キャラクター一覧',
+				'https://arknights.wikiru.jp/?%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7',
+			]
+		}
+	};
+	let isInit = false;
+	for(let title in collectTargets){
+		const urls = collectTargets[title].urls;
+		const inited = await dictionary_initialized(title);
+		if(urls.includes(document.URL) && (! inited)){
+			initialize(title, collectTargets[title].scraper);
+			isInit = true;
+		}
+	}
+
+	if(! isInit){
 		replaceText(document.body);
 	}
 }

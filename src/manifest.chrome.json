@@ -14,6 +14,10 @@
     "unlimitedStorage"
   ],
 
+  "options_ui": {
+    "page": "options.html",
+    "browser_style": true
+  },
   "background": {
 		"service_worker": "background.js"
 	},
@@ -21,7 +25,8 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "./scraper.js",
+        "./scraper_ArkNights.js",
+        "./scraper_BlueArchive.js",
         "./collecter.js",
         "./dictionary.js",
         "./noter.js",

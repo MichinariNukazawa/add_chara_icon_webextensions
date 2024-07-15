@@ -22,6 +22,10 @@ chrome.runtime.onInstalled.addListener( async (details) => {
 	chrome.tabs.create({
 		url: 'https://bluearchive.wikiru.jp/?キャラクター一覧',
 	})
+	chrome.tabs.create({
+		url: 'https://arknights.wikiru.jp/?キャラクター一覧',
+	})
+
 	console.log('initialized', details.reason);
 });
 

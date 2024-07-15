@@ -54,7 +54,7 @@ const doCharaNoterForNode = async (node) => {
 	// ** 末尾
 	// (https://bluearchive.wikiru.jp)の左側の"コメント/モモイ（メイド）"などに対応する意図
 	// このあたりは将来的に字句解析が実装されると不要になるかもしれないが...
-	const foundLast = /.+[-\/\s](.+)?$/.exec(node.textContent)
+	const foundLast = /.+[-\/\s](.+)$/.exec(node.textContent)
 	if(foundLast && 2 <= foundLast[1].length){ // マッチしても１文字なら使わない
 		queryWords.push(foundLast[1]);
 	}

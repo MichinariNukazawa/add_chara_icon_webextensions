@@ -26,6 +26,7 @@ Other: Clause-2 BSD License
 
 # 主な機能
 - ブルーアーカイブの生徒に対応
+- アークナイツのオペレータに対応
 - アイコン画像のキャッシュ
 
 # TODO
@@ -33,7 +34,6 @@ Other: Clause-2 BSD License
 - リンク以外の文中の人物名に対応(字句解析)
 - 表記ブレ・略称・通称等対応 ("シロコ（水着）":"水着シロコ","カジコ")
 - アイコン辞書データの編集または追加機能
-- アークナイツのオペレータに対応する?
 
 # Contact
 mail: [michinari.nukazawa@gmail.com][mailto]  

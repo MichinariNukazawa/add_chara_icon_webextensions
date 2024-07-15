@@ -14,9 +14,15 @@ const dictionary_data = {
 };
 */
 
-const dictionary_initialized = async () => {
-	const item = await chrome.storage.local.get(null);
-	return Object.keys(item).length !== 0;
+const dictionary_initialized = async (title) => {
+	const hash = await chrome.storage.local.get(null);
+	let res = {};
+	for(let key in hash){
+		if(hash[key].title == title){
+			res[key] = hash[key];
+		}
+	}
+	return Object.keys(res).length !== 0;
 }
 
 const dictionary_queryWords = async (words) => {
