@@ -33,8 +33,8 @@ const doCharaNoterForNode = async (node) => {
 	}
 	// ** key文字列の候補を切り出していく
 	let queryWords = [node.textContent];
-	// ** タグ表記から氏名部分を抽出してマッチ候補に追加する
-	const foundTag = /#([^#]+)(\(.+\))?$/.exec(node.textContent)
+	// ** タグ表記(またはタグ表記でなくともリンク)から、氏名部分を抽出して(末尾の括弧を取り除いて)マッチ候補に追加する
+	const foundTag = /#?([^#(]+)(\(.+\))?$/.exec(node.textContent)
 	if(foundTag && 2 <= foundTag[1].length){ // マッチしても１文字なら使わない
 		queryWords.push(foundTag[1]);
 	}
@@ -59,7 +59,7 @@ const doCharaNoterForNode = async (node) => {
 		queryWords.push(foundLast[1]);
 	}
 	//
-	console.log('querys', queryWords, node);
+	//console.log('querys', queryWords, node);
 
 	const hash = await dictionary_queryWords(queryWords);
 	if(0 < Object.keys(hash).length){

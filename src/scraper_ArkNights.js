@@ -47,7 +47,26 @@ const scrapeCharacterListPage_ArkNights = () => {
 	rowsData.forEach((row) => {
 		dictionary_data[row[0]] = row[1];
 	});
-	console.table(dictionary_data);
 
+	// ** ArkNights固有のエイリアスを追加
+	const aliases = {
+		'エイヤ' : {
+			'title': 'ArkNights',
+			'alias': 'エイヤフィヤトラ',
+		},
+	};
+	for(const [key, value] of Object.entries(aliases)){
+		if(dictionary_data.hasOwnProperty(key)){
+			console.warn('already exist', key);
+			continue;
+		}
+		if(! dictionary_data.hasOwnProperty(value['alias'])){
+			console.warn('not exist alias', key, value['alias']);
+			continue;
+		}
+		dictionary_data[key] = value;
+	}
+
+	//console.table(dictionary_data);
 	return dictionary_data;
 }

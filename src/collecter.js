@@ -46,6 +46,10 @@ const collectImage = async (icon_src_url) => {
 const collector = async (title, dictionary_data) => {
 	for(let key in dictionary_data){
 		let data = dictionary_data[key];
+
+		if(data.hasOwnProperty('alias')){
+			continue;
+		}
 		
 		try{
 			const dataUrl = await collectImage(data['icon_src_url']);

@@ -20,7 +20,7 @@ const getHashFromTitle = async (title) => {
 	});
 };
 
-const showIconsByKey = async (infoE, elem, title) => {
+const showIconsByKey = async (infoE, elem, aliasE, title) => {
 	const hash = await getHashFromTitle(title);
 	//console.log('hash', title, hash);
 
@@ -30,7 +30,7 @@ const showIconsByKey = async (infoE, elem, title) => {
 		return;
 	}
 
-	const createBlock = (charaName, imgSrc) => {
+	const createImgBlock = (charaName, imgSrc) => {
 		let blockE = document.createElement('span');
 		let imgE = document.createElement('img');
 		blockE.append(charaName, imgE, ', ');
@@ -46,8 +46,16 @@ const showIconsByKey = async (infoE, elem, title) => {
 		return blockE;
 	}
 	for(let key in hash){
-		const blockE = createBlock(key, hash[key]['icon_data']);
-		elem.appendChild(blockE);
+		if(hash[key].hasOwnProperty('icon_data')){
+			const blockE = createImgBlock(key, hash[key]['icon_data']);
+			elem.appendChild(blockE);	
+		}else if(hash[key].hasOwnProperty('alias')){
+			let blockE = document.createElement('span');
+			blockE.textContent = `${key} -> ${hash[key]['alias']},`;
+			aliasE.appendChild(blockE);
+		}else{
+			console.error('BUG invalid hash item', key, hask[key]);
+		}
 	}
 
 	infoE.textContent = `${Object.keys(hash).length}項目`;
@@ -56,15 +64,19 @@ const showIconsByKey = async (infoE, elem, title) => {
 const showIcons = () => {
 	// ** erase childs
 	document.getElementById('icon_showground_bluearchive').textContent = '';
+	document.getElementById('alias_showground_bluearchive').textContent = '';
 	document.getElementById('icon_showground_arknights').textContent = '';
+	document.getElementById('alias_showground_arknights').textContent = '';
 	// **
 	showIconsByKey(
 		document.getElementById('info_bluearchive'),
 		document.getElementById('icon_showground_bluearchive'),
+		document.getElementById('alias_showground_bluearchive'),
 		'BlueArchive');
 	showIconsByKey(
 		document.getElementById('info_arknights'),
 		document.getElementById('icon_showground_arknights'),
+		document.getElementById('alias_showground_arknights'),
 		'ArkNights');
 }
 

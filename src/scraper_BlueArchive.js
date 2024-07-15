@@ -29,5 +29,28 @@ const scrapeCharacterListPage_BlueArchive = () => {
 		dictionary_data[row[0]] = row[1];
 	});
 
+	// ** BlueArchive固有のエイリアスを追加
+	const aliases = {
+		'カジコ' : {
+			'title': 'BlueArchive',
+			'alias': 'シロコ（水着）',
+		},
+		'ドヒナ' : {
+			'title': 'BlueArchive',
+			'alias': 'ヒナ（ドレス）',
+		},
+	};
+	for(const [key, value] of Object.entries(aliases)){
+		if(dictionary_data.hasOwnProperty(key)){
+			console.warn('already exist', key);
+			continue;
+		}
+		if(! dictionary_data.hasOwnProperty(value['alias'])){
+			console.warn('not exist alias', key, value['alias']);
+			continue;
+		}
+		dictionary_data[key] = value;
+	}
+	
 	return dictionary_data;
 }
