@@ -1,7 +1,7 @@
 
 // ******** Core ********
 
-chrome.runtime.onInstalled.addListener( async (details) => {
+chrome.runtime.onInstalled.addListener( (details) => {
 	console.log('installed', details.reason);
 
 	// インストール時に初期設定を行う
@@ -25,6 +25,10 @@ chrome.runtime.onInstalled.addListener( async (details) => {
 	chrome.tabs.create({
 		url: 'https://arknights.wikiru.jp/?キャラクター一覧',
 	})
+
+	// FireFoxでは、呼び出し順を一番最後にしてもTabの並び順はこれが最左に並ぶ
+	// とはいえ最前面表示(CurrentTab？)にはなるので良しとする
+	chrome.runtime.openOptionsPage();
 
 	console.log('initialized', details.reason);
 });

@@ -68,7 +68,10 @@ const initialize = async (title, scraper) => {
 	// TODO firefoxで複数ページで同時にalertを呼び出すと、最初のalertを閉じるまで処理が進まない様子
 	// （別ページでは、alertが表示されないし、page_contentのJSも動かず辞書設定が行われない）
 	// ユーザ操作によってはArkNightsの辞書読み込みが実施されないので、何らかの対処が必要
-	window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定が完了しました`);
+	//
+	// そうならない場合もあるようで、うまく行く場合はそれぞれのタブでalertｇが表示された
+	// タイミングによるのかもしれない
+	// window.alert(`${chrome.runtime.getManifest().name} 拡張機能：\n${title}の辞書設定が完了しました`);
 
 	replaceText(document.body);
 }
